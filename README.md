@@ -3,7 +3,7 @@
 <img src="JK-BMS-and-Wemos.png"/>
 
 ---
-Arduino code used to read voltages of cells, abbtery count, remain capacity, charging current and pack voltage.
+Arduino code used to read voltages of cells, cell count, remain capacity, charging current and pack voltage.
 
 There are two files;
 1. Read BMS data and WifiManager, (Not required to hardcode Wifi credentials, WeMos module will be a AP at startup. Use mobile phone to connect and configure SSID and Password once connected to AP)
