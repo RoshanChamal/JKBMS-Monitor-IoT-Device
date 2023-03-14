@@ -1,7 +1,4 @@
 # JK-BMS Monitor using RS485
-
-
-
 ---
 Arduino code used to read voltages of cells, cell count, remain capacity, charging current and pack voltage. This code used to monitor 8 cells of LiFEPo4, 24 Battery pack using JK-B1A8S20P
 
