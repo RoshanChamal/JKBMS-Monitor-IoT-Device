@@ -5,6 +5,7 @@ Arduino code used to read voltages of cells, cell count, remain capacity, chargi
 There are two files;
 1. Read BMS data and WifiManager, Not required to hardcode Wifi credentials, WeMos module will be a AP at startup. Use mobile phone to connect and configure SSID and Password once connected to AP - this will apear as "Solar.JKBMS".
 2. Read BMS data (include WifiManager code), BMS data will be publish to public MQTT broker.
+3. In addition, it will monitor battery capacity and turn on/off a 30A 5VDC 230VAC Relay
 
 # Schematics
 <img src="JK-BMS-and-Wemos.png"/>
