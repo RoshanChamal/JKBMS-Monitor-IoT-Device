@@ -1,6 +1,6 @@
 # JK-BMS Monitor using RS485
 
-<img src="JK-BMS-and-Wemos.png"/>
+
 
 ---
 Arduino code used to read voltages of cells, cell count, remain capacity, charging current and pack voltage. This code used to monitor 8 cells of LiFEPo4, 24 Battery pack using JK-B1A8S20P
@@ -8,6 +8,9 @@ Arduino code used to read voltages of cells, cell count, remain capacity, chargi
 There are two files;
 1. Read BMS data and WifiManager, Not required to hardcode Wifi credentials, WeMos module will be a AP at startup. Use mobile phone to connect and configure SSID and Password once connected to AP - this will apear as "Solar.JKBMS".
 2. Read BMS data (include WifiManager code), BMS data will be publish to public MQTT broker.
+
+# Schematics
+<img src="JK-BMS-and-Wemos.png"/>
 
 # RS485 Module
 <img src="rs485_module.jpeg"/>
