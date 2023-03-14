@@ -20,3 +20,8 @@ There are two files;
 # JK-BMS RS485 adapter
 <img src="JK RS485 adapter.jpg"/>
 
+## References
+
+* https://www.mischianti.org/2020/05/11/interface-arduino-esp8266-esp32-rs-485/
+* https://github.com/dj-nitehawk/jk-bms-test
+* https://github.com/dj-nitehawk/Hybrid-Inverter-Monitor
