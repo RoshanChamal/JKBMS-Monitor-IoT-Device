@@ -21,6 +21,10 @@ In addition, it will monitor battery capacity and turn on/off a 30A 5VDC 230VAC 
 # JK-BMS RS485 adapter
 <img src="JK RS485 adapter.jpg"/>
 
+# 3.3V 5V Bi-Directional Logic Level Shifter Module
+<img src="logic_level_shifter.jpg"/>
+`https://tronic.lk/product/4-channel-3-3v-5v-bi-directional-logic-level-shifter-mo`
+
 ## References
 
 * https://www.mischianti.org/2020/05/11/interface-arduino-esp8266-esp32-rs-485/
