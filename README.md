@@ -8,7 +8,7 @@ There are two files;
 In addition, it will monitor battery capacity and turn on/off a 30A 5VDC 230VAC Relay.
 
 # Schematics
-<img src="JK-BMS-and-Wemos.png"/>
+<img src="JK-BMS-and-Wemos-with-logic_level_shifter.jpg"/>
 
 # RS485 Module
 <img src="rs485_module.jpeg"/>
