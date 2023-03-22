@@ -18,13 +18,14 @@
 
 SoftwareSerial mySerial(D1, D2); // RX, TX //used for JK-BMS - RS485
 
-int battHighLimit = 35;
-int battLowLimit = 30;
-float chargingCurrent=0;  // battery current
-float batteryVoltage=0;   // battery voltage
-int batteryCapacity=0;    // battery capacity
+int battHighLimit       = 30;
+int battLowLimit        = 25;
+float chargingCurrent   = 0;  // battery current
+float batteryVoltage    = 0;   // battery voltage
+int batteryCapacity     = 0;    // battery capacity
 float batteryCells[16];    //for 8 cell battery
 
+int finalBatteryCapacity = -1;  //to get avergae of capacity to determine reading is correct or not
 char dataCmd[] = {0x4E, 0x57, 0x00, 0x13 ,0x00 ,0x00, 0x00 ,0x00 ,0x06 ,0x03 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x68 ,0x00 ,0x00 ,0x01 ,0x29};
 
 
@@ -109,19 +110,6 @@ void loop() {
   if(currentMillis - previousBMSMillis >= dataInterval) // execute once every 5 second, don't flood remote service
   {
     RequestBMSData();
-    //update next read time
-    previousBMSMillis = currentMillis;
-
-    if(batteryCapacity < 100 && batteryCapacity > 0 && batteryCapacity > battHighLimit)
-    {
-      digitalWrite(RELAY_AC_PIN, LOW);
-      Serial.println(">>>>> RELAY_AC_PIN: LOW - AC OUT READY");
-    }
-    else if(batteryCapacity < 100 && batteryCapacity > 0 && batteryCapacity <= battLowLimit)
-    {
-      digitalWrite(RELAY_AC_PIN, HIGH);
-      Serial.println("<<<<< RELAY_AC_PIN: HIGH - AC OUT STOPPED");
-    }
 
     //send readigs to mqtt server
     if(lastReadMillis > currentMillis)
@@ -146,12 +134,25 @@ void loop() {
 
       client.publish(topic.c_str(), outData.c_str());
       Serial.print("Send IOT Data:");Serial.println(outData);
-    }
+
+      //Controlling Relay Pin
+      if(finalBatteryCapacity != -1 && finalBatteryCapacity > battHighLimit)
+      {
+        digitalWrite(RELAY_AC_PIN, LOW);
+        Serial.println(">>>>> RELAY_AC_PIN: LOW - AC OUT READY");
+      }
+      else if(finalBatteryCapacity != -1 && finalBatteryCapacity <= battLowLimit)
+      {
+        digitalWrite(RELAY_AC_PIN, HIGH);
+        Serial.println("<<<<< RELAY_AC_PIN: HIGH - AC OUT STOPPED");
+      }      
+    }    
+    //update next read time
+    previousBMSMillis = currentMillis;
   }
   //heart beat
   if(currentMillis - previousHBMillis >= 60000)
-  {
-    previousHBMillis = currentMillis;
+  {    
     String topic("/");
     topic += CLIENT_ID;
     topic += "/status";  
@@ -159,12 +160,16 @@ void loop() {
     // publish value to topic
     client.publish(topic.c_str(), valueStr.c_str());
     Serial.print("HB DATA:");Serial.println(valueStr);
+
+    //update next time
+    previousHBMillis = currentMillis;
   }
+  //restart MCU
   if(currentMillis - lastResetMillis > 1800000)
   {
     resetArudino(); //reset arduino after 30min
   }  
-  delay(5000);
+  delay(500);
 }
 
 bool initialized = false;
@@ -217,30 +222,35 @@ void EnableTx(void)
 int reqCount = 0, validCount = 0;
 void RequestBMSData()
 {
+    Serial.println("Requesting ...");
     char buff[268];
-    int byteCounter = 0;
-    Serial.println("Requesting ...");    
+    int byteCounter = 0;    
     EnableTx();
     delayMicroseconds(100);
     for(int i=0;i<21;i++)
     {
       mySerial.write(dataCmd[i]);
-    }
-    
+    }    
     //mySerial.println(dataCmd, sizeof(dataCmd));
-    //delayMicroseconds(10);
+    //delayMicroseconds(100);
     EnableRx();
     delayMicroseconds(2000);
+    //read data
+    long startTime = millis();
     //byteCounter = 0;
     int inByte = 0;
-    while(mySerial.available())
+    while (millis() - startTime < 5000)
     {
-      inByte = mySerial.read();
-      buff[byteCounter] = inByte;
-      //Serial.print(byteCounter);Serial.print(':');Serial.print(inByte, HEX);Serial.println(' ');
-      byteCounter++;
-      delayMicroseconds(5);
-    }
+      while(mySerial.available())
+      {
+        inByte = mySerial.read();
+        buff[byteCounter] = inByte;
+        //Serial.print(byteCounter);Serial.print(':');Serial.print(inByte, HEX);Serial.println(' ');
+        byteCounter++;
+        delayMicroseconds(5);
+      }
+      delayMicroseconds(1);
+    } 
     if(byteCounter > 0)
     {
       ProcessDataPacket(buff);
@@ -250,15 +260,19 @@ void RequestBMSData()
     Serial.print(", Request count:");Serial.print(reqCount);
     Serial.print(", Valid count:");Serial.println(validCount);
 }
+
+int lastBatteryCapacity = -1;  //to get avergae of capacity to determine reading is correct or not
+
 void ProcessDataPacket(char buffData[268])
 {
   //int pos = 11;
   //Serial.print(pos);Serial.print(':');Serial.print(buffData[pos], HEX);Serial.println(' ');
 
+  
   if(buffData[0]==0x4E && buffData[1]==0x57 && buffData[11]==0x79)
-  {
+  {    
     Serial.println("Valid.");   
-    
+    bool isValid = true;    
     int pos = 12;
     int cellCount = buffData[pos++]/3;
     Serial.print("cellCount:");Serial.println(cellCount);
@@ -276,23 +290,56 @@ void ProcessDataPacket(char buffData[268])
     }
     
     int batteryCapacityX = (int)buffData[53];
-    if(batteryCapacityX >=0 && batteryCapacityX <=100) //0-100%
-    {
+    Serial.print("Capacity(raw):");Serial.println(batteryCapacityX);
+    if(batteryCapacityX > 0 && batteryCapacityX <=100) //0-100%
+    {      
       batteryCapacity = batteryCapacityX;
+      //cross check reading      
+      if(lastBatteryCapacity == -1)
+      {
+        lastBatteryCapacity = batteryCapacity;
+      }
+      else if(lastBatteryCapacity != -1)
+      {
+        if(abs(lastBatteryCapacity - batteryCapacity) != 0 && abs(lastBatteryCapacity - batteryCapacity) > 5) //difference should be less than with previous reading
+        {
+          lastBatteryCapacity = -1;
+        }
+        else if(abs(lastBatteryCapacity - batteryCapacity) == 0)
+        {
+          finalBatteryCapacity = batteryCapacity; //used this value for Relay on/off
+          lastBatteryCapacity = batteryCapacity; //update last value for next check
+        }
+      }      
     }
-    Serial.print("Capacity:");Serial.println(batteryCapacity);
-    chargingCurrent = (buffData[51] + buffData[50]*256) * -0.01; 
+    else
+    {
+      isValid = false;
+    }
+    Serial.print("Capacity(Modified):");Serial.println(batteryCapacity);    
+    chargingCurrent = ((buffData[51] + buffData[50]*256) & 0xfff) * -0.01; 
     Serial.print("Current:");Serial.println(chargingCurrent);
-    float batteryVoltageX = (buffData[48] + buffData[47]*256) * 0.01; 
+    float batteryVoltageX = ((buffData[48] + buffData[47]*256) & 0xfff) * 0.01; 
+    Serial.print("Voltage(raw):");Serial.println(batteryVoltageX);    
     if(batteryVoltageX > 0 && batteryVoltageX <= 30) //for 24V system
     {
       batteryVoltage = batteryVoltageX;
     }
-    Serial.print("Voltage:");Serial.println(batteryVoltage);
-    
+    else
+    {
+      isValid = false;
+    }
+    Serial.print("Voltage(Modified):");Serial.println(batteryVoltage);    
     Serial.println();
 
-    lastReadMillis = millis() + 30000; //advanced time with 30sec to avoid expire  for successful reads
+    if(isValid)
+    {
+      lastReadMillis = millis() + 10000; //advanced time with 30sec to avoid expire  for successful reads
+    }
+    else
+    {
+      lastReadMillis = 0;//reset to  avoid values via mqtt
+    }
     validCount++;
   }
   else{

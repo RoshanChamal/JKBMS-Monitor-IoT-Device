@@ -12,6 +12,7 @@
 
 #define REDE D0
 
+//#define _SS_MAX_RX_BUFF 255 // RX buffer size
 SoftwareSerial mySerial(D1, D2); // RX, TX //used for JK-BMS - RS485
 
 int battHighLimit = 35;
@@ -93,19 +94,26 @@ void RequestBMSData()
     }
     
     //mySerial.println(dataCmd, sizeof(dataCmd));
-    //delayMicroseconds(10);
+    //delayMicroseconds(100);
     EnableRx();
     delayMicroseconds(2000);
+
+    long startTime = millis();
     //byteCounter = 0;
     int inByte = 0;
-    while(mySerial.available())
+    while (millis() - startTime < 5000)
     {
-      inByte = mySerial.read();
-      buff[byteCounter] = inByte;
-      //Serial.print(byteCounter);Serial.print(':');Serial.print(inByte, HEX);Serial.println(' ');
-      byteCounter++;
-      delayMicroseconds(5);
-    }    
+      while(mySerial.available())
+      {
+        inByte = mySerial.read();
+        buff[byteCounter] = inByte;
+        //Serial.print(byteCounter);Serial.print(':');Serial.print(inByte, HEX);Serial.println(' ');
+        byteCounter++;
+        delayMicroseconds(5);
+      }
+      delayMicroseconds(1);
+    }
+        
     if(byteCounter > 0)
     {
       ProcessDataPacket(buff);
