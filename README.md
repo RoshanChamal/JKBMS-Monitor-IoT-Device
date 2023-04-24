@@ -23,18 +23,18 @@ Both methods are working fine.
 
 # RS485 Module
 <img src="rs485_module.jpeg"/>
-`https://tronic.lk/product/max485-ttl-to-rs485-max485csa-converter-module-for-ardu`
+https://tronic.lk/product/max485-ttl-to-rs485-max485csa-converter-module-for-ardu
 
 # WeMos Module
 <img src="WeMosD1Mini_pinout.png"/>
-`https://tronic.lk/product/nodemcu-d1-mini-lua-wifi-wemos-4m-esp8266-module`
+https://tronic.lk/product/nodemcu-d1-mini-lua-wifi-wemos-4m-esp8266-module
 
 # JK-BMS RS485 adapter
 <img src="JK RS485 adapter.jpg"/>
 
 # 3.3V 5V Bi-Directional Logic Level Shifter Module
 <img src="logic_level_shifter.jpg"/>
-`https://tronic.lk/product/4-channel-3-3v-5v-bi-directional-logic-level-shifter-mo`
+https://tronic.lk/product/4-channel-3-3v-5v-bi-directional-logic-level-shifter-mo
 
 ## References
 
