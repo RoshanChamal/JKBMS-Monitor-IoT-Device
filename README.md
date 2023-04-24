@@ -9,7 +9,8 @@ In addition, it will monitor battery capacity and turn on/off a 30A 5VDC 230VAC 
 
 There are two Schematics:
 1. RS-485 module work by supply 5V 
-2. RS-485 module work by supply 3.3V 
+2. RS-485 module work by supply 3.3V
+
 (Note: JK-BMS RS485 adapter GND and RS-485 module GND need to connect)
 # Schematics 5V
 <img src="JK-BMS-and-Wemos-with-logic_level_shifter.jpg"/>
