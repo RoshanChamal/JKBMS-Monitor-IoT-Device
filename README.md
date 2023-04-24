@@ -13,7 +13,7 @@ There are two Schematics:
 
 Both methods are working fine.
 
-(Note: JK-BMS RS485 adapter GND and RS-485 module GND need to connect)
+(Note: JK-BMS RS485 adapter GND and RS-485 module GND need to connect to avoid data packet drop issues)
 
 # Schematics 5V
 <img src="JK-BMS-and-Wemos-with-logic_level_shifter.jpg"/>
