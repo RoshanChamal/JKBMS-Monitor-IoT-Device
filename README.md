@@ -12,6 +12,7 @@ There are two Schematics:
 2. RS-485 module work by supply 3.3V
 
 Both methods are working fine.
+
 (Note: JK-BMS RS485 adapter GND and RS-485 module GND need to connect)
 
 # Schematics 5V
