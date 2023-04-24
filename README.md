@@ -7,8 +7,15 @@ There are two files;
 2. Read BMS data (include WifiManager code), BMS data will be publish to public MQTT broker.
 In addition, it will monitor battery capacity and turn on/off a 30A 5VDC 230VAC Relay.
 
-# Schematics
+There are two Schematics:
+1. RS-485 module work by supply 5V 
+2. RS-485 module work by supply 3.3V 
+(Note: JK-BMS RS485 adapter GND and RS-485 module GND need to connect)
+# Schematics 5V
 <img src="JK-BMS-and-Wemos-with-logic_level_shifter.jpg"/>
+
+# Schematics 3.3V
+<img src="JK-BMS-and-Wemos-with-3v3.jpg"/>
 
 # RS485 Module
 <img src="rs485_module.jpeg"/>
