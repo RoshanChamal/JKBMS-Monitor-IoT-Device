@@ -16,7 +16,7 @@ There are two Schematics:
 <img src="JK-BMS-and-Wemos-with-logic_level_shifter.jpg"/>
 
 # Schematics 3.3V
-<img src="JK-BMS-and-Wemos-with-3v3.jpg"/>
+<img src="BMS-and-Wemos-with-3v3.JPG"/>
 
 # RS485 Module
 <img src="rs485_module.jpeg"/>
